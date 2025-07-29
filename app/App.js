@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { useState } from 'react';
 import reflexiones from './reflexiones_completas.json';
 
@@ -7,6 +7,8 @@ export default function App() {
   // Estado para la fecha seleccionada (por defecto hoy)
   const hoy = new Date();
   const [fechaSeleccionada, setFechaSeleccionada] = useState(hoy);
+  const [inputFecha, setInputFecha] = useState('');
+  const [errorFecha, setErrorFecha] = useState('');
 
   // Función para formatear fecha a YYYY-MM-DD
   const formatearFecha = (fecha) => {
@@ -29,13 +31,17 @@ export default function App() {
 
   // Obtener la reflexión de la fecha seleccionada
   const fechaString = formatearFecha(fechaSeleccionada);
-  const reflexionActual = reflexiones[fechaString] || "No hay reflexión para esta fecha.";
+  const reflexionActual = typeof reflexiones[fechaString] === 'string'
+  ? reflexiones[fechaString]
+  : "No hay reflexión para esta fecha.";
 
   // Función para cambiar a día anterior
   const diaAnterior = () => {
     const nuevaFecha = new Date(fechaSeleccionada);
     nuevaFecha.setDate(nuevaFecha.getDate() - 1);
     setFechaSeleccionada(nuevaFecha);
+    setInputFecha('');
+    setErrorFecha('');
   };
 
   // Función para cambiar a día siguiente
@@ -43,41 +49,30 @@ export default function App() {
     const nuevaFecha = new Date(fechaSeleccionada);
     nuevaFecha.setDate(nuevaFecha.getDate() + 1);
     setFechaSeleccionada(nuevaFecha);
+    setInputFecha('');
+    setErrorFecha('');
   };
 
   // Función para volver a hoy
   const volverHoy = () => {
     setFechaSeleccionada(new Date());
+    setInputFecha('');
+    setErrorFecha('');
   };
 
-  // Función para ir a una fecha específica (ejemplo simple)
-  const irAFechaEspecifica = () => {
-    Alert.prompt(
-      "Ir a fecha específica",
-      "Ingresa la fecha en formato YYYY-MM-DD:",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel"
-        },
-        {
-          text: "Ir",
-          onPress: (fechaTexto) => {
-            if (fechaTexto && fechaTexto.match(/^\d{4}-\d{2}-\d{2}$/)) {
-              const nuevaFecha = new Date(fechaTexto + 'T00:00:00');
-              if (!isNaN(nuevaFecha.getTime())) {
-                setFechaSeleccionada(nuevaFecha);
-              } else {
-                Alert.alert("Error", "Fecha inválida");
-              }
-            } else {
-              Alert.alert("Error", "Formato incorrecto. Usa YYYY-MM-DD");
-            }
-          }
-        }
-      ],
-      "plain-text"
-    );
+  // Función para cambiar la fecha manualmente
+  const cambiarFechaManual = () => {
+    if (inputFecha.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const nuevaFecha = new Date(inputFecha + 'T00:00:00');
+      if (!isNaN(nuevaFecha.getTime())) {
+        setFechaSeleccionada(nuevaFecha);
+        setErrorFecha('');
+      } else {
+        setErrorFecha('Fecha inválida');
+      }
+    } else {
+      setErrorFecha('Formato incorrecto. Usa YYYY-MM-DD');
+    }
   };
 
   return (
@@ -90,10 +85,9 @@ export default function App() {
           <Text style={styles.textoBoton}>← Anterior</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.fechaActual} onPress={irAFechaEspecifica}>
+        <View style={styles.fechaActual}>
           <Text style={styles.fechaTexto}>{formatearFechaLegible(fechaSeleccionada)}</Text>
-          <Text style={styles.fechaSubtexto}>Toca para cambiar fecha</Text>
-        </TouchableOpacity>
+        </View>
         
         <TouchableOpacity style={styles.botonNavegacion} onPress={diaSiguiente}>
           <Text style={styles.textoBoton}>Siguiente →</Text>
@@ -104,6 +98,21 @@ export default function App() {
       <TouchableOpacity style={styles.botonHoy} onPress={volverHoy}>
         <Text style={styles.textoBotonHoy}>Volver a Hoy</Text>
       </TouchableOpacity>
+
+      {/* Input para elegir fecha manualmente */}
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="YYYY-MM-DD"
+          value={inputFecha}
+          onChangeText={setInputFecha}
+          keyboardType="numbers-and-punctuation"
+        />
+        <TouchableOpacity style={styles.botonInput} onPress={cambiarFechaManual}>
+          <Text style={styles.textoBotonInput}>Ir a fecha</Text>
+        </TouchableOpacity>
+      </View>
+      {errorFecha ? <Text style={styles.error}>{errorFecha}</Text> : null}
       
       {/* Reflexión del día */}
       <ScrollView style={styles.scrollContainer}>
@@ -173,11 +182,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textTransform: 'capitalize',
   },
-  fechaSubtexto: {
-    fontSize: 12,
-    color: '#7f8c8d',
-    marginTop: 5,
-  },
   botonHoy: {
     backgroundColor: '#e74c3c',
     paddingHorizontal: 20,
@@ -190,6 +194,37 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 14,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    justifyContent: 'center',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    width: 120,
+    marginRight: 10,
+    backgroundColor: 'white',
+  },
+  botonInput: {
+    backgroundColor: '#27ae60',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  textoBotonInput: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  error: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 10,
   },
   scrollContainer: {
     flex: 1,
