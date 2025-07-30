@@ -1,7 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
 import { useState } from 'react';
 import reflexiones from './reflexiones_completas.json';
+import { kinFromDate } from './src/utils/kin';
+import { SELLO_NOMBRES, TONO_NOMBRES, SELLO_IMAGENES } from './src/utils/selloData';
 
 export default function App() {
   // Estado para la fecha seleccionada (por defecto hoy)
@@ -34,6 +36,9 @@ export default function App() {
   const reflexionActual = typeof reflexiones[fechaString] === 'string'
   ? reflexiones[fechaString]
   : "No hay reflexión para esta fecha.";
+  
+  // Kin del día seleccionado
+const kin = kinFromDate(fechaSeleccionada);
 
   // Función para cambiar a día anterior
   const diaAnterior = () => {
@@ -76,11 +81,24 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.titulo}>Semilla Resonante Digital</Text>
-      
-      {/* Navegación de fechas */}
-      <View style={styles.navegacionFechas}>
+  <View style={styles.container}>
+    <Text style={styles.titulo}>By ManoElectricaAzul</Text>
+    <Text style={styles.titulo}>Calendario Semilla Resonante</Text>
+    
+    {/* Kin del día */}
+    <View style={styles.kinContainer}>
+      <Image
+        source={SELLO_IMAGENES[kin.sello]}
+        style={styles.selloImagen}
+        resizeMode="contain"
+      />
+      <Text style={styles.kinTexto}>
+        Kin {kin.num}: {SELLO_NOMBRES[kin.sello]} · {TONO_NOMBRES[kin.tono]}
+      </Text>
+    </View>
+    
+    {/* Navegación de fechas */}
+    <View style={styles.navegacionFechas}>
         <TouchableOpacity style={styles.botonNavegacion} onPress={diaAnterior}>
           <Text style={styles.textoBoton}>← Anterior</Text>
         </TouchableOpacity>
@@ -249,4 +267,19 @@ const styles = StyleSheet.create({
     color: '#34495e',
     textAlign: 'justify',
   },
+  kinContainer: {
+  alignItems: 'center',
+  marginBottom: 15,
+},
+selloImagen: {
+  width: 100,
+  height: 100,
+  marginBottom: 8,
+},
+kinTexto: {
+  fontSize: 18,
+  fontWeight: 'bold',
+  color: '#2c3e50',
+  textAlign: 'center',
+},
 });
