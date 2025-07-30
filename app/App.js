@@ -34,11 +34,10 @@ export default function App() {
   // Kin del día seleccionado
   const kin = kinFromDate(fechaSeleccionada);
 
-  // Obtener la reflexión de la fecha seleccionada
-  const fechaString = formatearFecha(fechaSeleccionada);
-  const reflexionActual = typeof reflexiones[fechaString] === 'string'
-  ? reflexiones[fechaString]
-  : "No hay reflexión para esta fecha.";
+  // Obtener la reflexión por número de Kin
+  const reflexionActual = typeof reflexiones[kin.num] === 'string'
+    ? reflexiones[kin.num]
+    : "No hay reflexión para este Kin.";
 
   // Función para cambiar a día anterior
   const diaAnterior = () => {
