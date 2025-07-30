@@ -31,14 +31,14 @@ export default function App() {
     return fecha.toLocaleDateString('es-ES', opciones);
   };
 
+  // Kin del día seleccionado
+  const kin = kinFromDate(fechaSeleccionada);
+
   // Obtener la reflexión de la fecha seleccionada
   const fechaString = formatearFecha(fechaSeleccionada);
   const reflexionActual = typeof reflexiones[fechaString] === 'string'
   ? reflexiones[fechaString]
   : "No hay reflexión para esta fecha.";
-  
-  // Kin del día seleccionado
-const kin = kinFromDate(fechaSeleccionada);
 
   // Función para cambiar a día anterior
   const diaAnterior = () => {
