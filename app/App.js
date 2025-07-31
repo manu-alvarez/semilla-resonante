@@ -6,13 +6,11 @@ import { kinFromDate } from './src/utils/kin';
 import { SELLO_NOMBRES, TONO_NOMBRES, SELLO_IMAGENES } from './src/utils/selloData';
 
 export default function App() {
-  // Estado para la fecha seleccionada (por defecto hoy)
   const hoy = new Date();
   const [fechaSeleccionada, setFechaSeleccionada] = useState(hoy);
   const [inputFecha, setInputFecha] = useState('');
   const [errorFecha, setErrorFecha] = useState('');
 
-  // Función para formatear fecha a YYYY-MM-DD
   const formatearFecha = (fecha) => {
     const yyyy = fecha.getFullYear();
     const mm = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -20,7 +18,6 @@ export default function App() {
     return `${yyyy}-${mm}-${dd}`;
   };
 
-  // Función para formatear fecha para mostrar (más legible)
   const formatearFechaLegible = (fecha) => {
     const opciones = { 
       weekday: 'long', 
@@ -31,15 +28,12 @@ export default function App() {
     return fecha.toLocaleDateString('es-ES', opciones);
   };
 
-  // Kin del día seleccionado
   const kin = kinFromDate(fechaSeleccionada);
 
-  // Obtener la reflexión por número de Kin
   const reflexionActual = typeof reflexiones[kin.num] === 'string'
     ? reflexiones[kin.num]
     : "No hay reflexión para este Kin.";
 
-  // Función para cambiar a día anterior
   const diaAnterior = () => {
     const nuevaFecha = new Date(fechaSeleccionada);
     nuevaFecha.setDate(nuevaFecha.getDate() - 1);
@@ -48,7 +42,6 @@ export default function App() {
     setErrorFecha('');
   };
 
-  // Función para cambiar a día siguiente
   const diaSiguiente = () => {
     const nuevaFecha = new Date(fechaSeleccionada);
     nuevaFecha.setDate(nuevaFecha.getDate() + 1);
@@ -57,14 +50,12 @@ export default function App() {
     setErrorFecha('');
   };
 
-  // Función para volver a hoy
   const volverHoy = () => {
     setFechaSeleccionada(new Date());
     setInputFecha('');
     setErrorFecha('');
   };
 
-  // Función para cambiar la fecha manualmente
   const cambiarFechaManual = () => {
     if (inputFecha.match(/^\d{4}-\d{2}-\d{2}$/)) {
       const nuevaFecha = new Date(inputFecha + 'T00:00:00');
@@ -80,66 +71,66 @@ export default function App() {
   };
 
   return (
-  <View style={styles.container}>
-    <Text style={styles.titulo}>By ManoElectricaAzul</Text>
-    <Text style={styles.titulo}>Calendario Semilla Resonante</Text>
-    
-    {/* Kin del día */}
-    <View style={styles.kinContainer}>
-      <Image
-        source={SELLO_IMAGENES[kin.sello]}
-        style={styles.selloImagen}
-        resizeMode="contain"
-      />
-      <Text style={styles.kinTexto}>
-        Kin {kin.num}: {SELLO_NOMBRES[kin.sello]} · {TONO_NOMBRES[kin.tono]}
-      </Text>
-    </View>
-    
-    {/* Navegación de fechas */}
-    <View style={styles.navegacionFechas}>
-        <TouchableOpacity style={styles.botonNavegacion} onPress={diaAnterior}>
-          <Text style={styles.textoBoton}>← Anterior</Text>
-        </TouchableOpacity>
-        
-        <View style={styles.fechaActual}>
-          <Text style={styles.fechaTexto}>{formatearFechaLegible(fechaSeleccionada)}</Text>
-        </View>
-        
-        <TouchableOpacity style={styles.botonNavegacion} onPress={diaSiguiente}>
-          <Text style={styles.textoBoton}>Siguiente →</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Botón para volver a hoy */}
-      <TouchableOpacity style={styles.botonHoy} onPress={volverHoy}>
-        <Text style={styles.textoBotonHoy}>Volver a Hoy</Text>
-      </TouchableOpacity>
-
-      {/* Input para elegir fecha manualmente */}
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="YYYY-MM-DD"
-          value={inputFecha}
-          onChangeText={setInputFecha}
-          keyboardType="numbers-and-punctuation"
+    <View style={styles.container}>
+      <Text style={styles.titulo}>By ManoElectricaAzul</Text>
+      <Text style={styles.titulo}>Calendario Semilla Resonante</Text>
+      
+      {/* Kin del día */}
+      <View style={styles.kinContainer}>
+        <Image
+          source={{ uri: SELLO_IMAGENES[kin.sello] }}
+          style={styles.selloImagen}
+          resizeMode="contain"
         />
-        <TouchableOpacity style={styles.botonInput} onPress={cambiarFechaManual}>
-          <Text style={styles.textoBotonInput}>Ir a fecha</Text>
-        </TouchableOpacity>
+        <Text style={styles.kinTexto}>
+          Kin {kin.num}: {SELLO_NOMBRES[kin.sello]} · {TONO_NOMBRES[kin.tono]}
+        </Text>
       </View>
-      {errorFecha ? <Text style={styles.error}>{errorFecha}</Text> : null}
       
-      {/* Reflexión del día */}
-      <ScrollView style={styles.scrollContainer}>
-        <View style={styles.contenedorReflexion}>
-          <Text style={styles.reflexion}>{reflexionActual}</Text>
+      {/* Navegación de fechas */}
+      <View style={styles.navegacionFechas}>
+          <TouchableOpacity style={styles.botonNavegacion} onPress={diaAnterior}>
+            <Text style={styles.textoBoton}>← Anterior</Text>
+          </TouchableOpacity>
+          
+          <View style={styles.fechaActual}>
+            <Text style={styles.fechaTexto}>{formatearFechaLegible(fechaSeleccionada)}</Text>
+          </View>
+          
+          <TouchableOpacity style={styles.botonNavegacion} onPress={diaSiguiente}>
+            <Text style={styles.textoBoton}>Siguiente →</Text>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
-      
-      <StatusBar style="auto" />
-    </View>
+
+        {/* Botón para volver a hoy */}
+        <TouchableOpacity style={styles.botonHoy} onPress={volverHoy}>
+          <Text style={styles.textoBotonHoy}>Volver a Hoy</Text>
+        </TouchableOpacity>
+
+        {/* Input para elegir fecha manualmente */}
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="YYYY-MM-DD"
+            value={inputFecha}
+            onChangeText={setInputFecha}
+            keyboardType="numbers-and-punctuation"
+          />
+          <TouchableOpacity style={styles.botonInput} onPress={cambiarFechaManual}>
+            <Text style={styles.textoBotonInput}>Ir a fecha</Text>
+          </TouchableOpacity>
+        </View>
+        {errorFecha ? <Text style={styles.error}>{errorFecha}</Text> : null}
+        
+        {/* Reflexión del día */}
+        <ScrollView style={styles.scrollContainer}>
+          <View style={styles.contenedorReflexion}>
+            <Text style={styles.reflexion}>{reflexionActual}</Text>
+          </View>
+        </ScrollView>
+        
+        <StatusBar style="auto" />
+      </View>
   );
 }
 
@@ -267,18 +258,18 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
   },
   kinContainer: {
-  alignItems: 'center',
-  marginBottom: 15,
-},
-selloImagen: {
-  width: 100,
-  height: 100,
-  marginBottom: 8,
-},
-kinTexto: {
-  fontSize: 18,
-  fontWeight: 'bold',
-  color: '#2c3e50',
-  textAlign: 'center',
-},
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  selloImagen: {
+    width: 100,
+    height: 100,
+    marginBottom: 8,
+  },
+  kinTexto: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    textAlign: 'center',
+  },
 });
