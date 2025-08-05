@@ -73,7 +73,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>By ManoElectricaAzul</Text>
-      <Text style={styles.titulo}>Calendario Semilla Resonante</Text>
+      <Text style={styles.titulo}>Calendario Maya</Text>
       
       {/* Kin del día */}
       <View style={styles.kinContainer}>
